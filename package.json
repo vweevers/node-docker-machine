@@ -1,6 +1,6 @@
 {
   "name": "docker-machine",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Programmatic API to Docker Machine",
   "license": "MIT",
   "author": "Vincent Weevers",
