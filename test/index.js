@@ -82,6 +82,41 @@ test('isRunning', function (t) {
   })
 })
 
+test('start', function (t) {
+  t.plan(10)
+
+  const s1 = spy({})
+  const s2 = spy({})
+  const s3 = spy({ error: new Error('\nhost does not exist abc') })
+  const s4 = spy({ error: new Error('\nalready running abc') })
+  const s5 = spy({ error: new Error('other error') })
+
+  Machine.start('beep', (err) => {
+    t.ifError(err, 'no start error')
+    t.same(s1.args, ['start', 'beep'])
+  })
+
+  new Machine().start(err => {
+    t.ifError(err, 'no start error')
+    t.same(s2.args, ['start', 'default'])
+  })
+
+  Machine.start('boop', (err) => {
+    t.is(err.message, 'Docker host "boop" does not exist', 'non existent error')
+    t.same(s3.args, ['start', 'boop'])
+  })
+
+  new Machine().start(err => {
+    t.ifError(err, 'no start error if already started')
+    t.same(s4.args, ['start', 'default'])
+  })
+
+  Machine.start('four', (err) => {
+    t.is(err.message, 'other error', 'passthrough other error')
+    t.same(s5.args, ['start', 'four'])
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
@@ -96,7 +131,7 @@ function createMock(spies) {
       state.args = args
       state.opts = opts
 
-      process.nextTick(done, null, state.result)
+      process.nextTick(done, state.error || null, state.result)
     }
   }
 }
