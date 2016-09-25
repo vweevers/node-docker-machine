@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const Machine = require('..')
 const cmd = process.argv.slice(2)
