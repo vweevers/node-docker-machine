@@ -9,6 +9,11 @@ const HOST_NON_EXISTENT = /host does not exist/i
     , ALREADY_RUNNING = /already running/i
 
 class Machine {
+  constructor(opts) {
+    opts = Machine.options(opts)
+    this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
+  }
+
   static options(opts) {
     if (typeof opts === 'string') return { name: opts }
     else return opts || {}
@@ -19,11 +24,6 @@ class Machine {
       cwd: env.DOCKER_TOOLBOX_INSTALL_PATH || '.',
       encoding: 'utf8'
     }, done)
-  }
-
-  constructor(opts) {
-    opts = Machine.options(opts)
-    this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
   }
 
   static status(name, done) {
@@ -80,9 +80,24 @@ class Machine {
     if (Array.isArray(cmd)) cmd = cmd.join(' ')
     Machine.command(['ssh', name, cmd], done)
   }
+
+  static inspect(name, done) {
+    Machine.command(['inspect', name], (err, stdout) => {
+      if (err) return done(err)
+
+      try {
+        var data = JSON.parse(stdout.trim())
+      } catch (err) {
+        return done(err)
+      }
+
+      done(null, data)
+    })
+  }
+
 }
 
-;['status', 'isRunning', 'start', 'env', 'ssh'].forEach(method => {
+;['status', 'isRunning', 'start', 'env', 'ssh', 'inspect'].forEach(method => {
   Machine.prototype[method] = function () {
     const args = Array.from(arguments)
     args.unshift(this.name)
