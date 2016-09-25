@@ -195,6 +195,42 @@ test('env as json overrides custom shell', function (t) {
   })
 })
 
+test('ssh', function (t) {
+  t.plan(6)
+
+  const s1 = spy({ result: ' beep ' })
+  const s2 = spy({ result: ' boop ' })
+
+  Machine.ssh('beep', 'cmd', (err, result) => {
+    t.ifError(err, 'no ssh error')
+    t.is(result, s1.result, 'does not trim')
+    t.same(s1.args, ['ssh', 'beep', 'cmd'])
+  })
+
+  new Machine().ssh('cmd', (err, result) => {
+    t.ifError(err, 'no ssh error')
+    t.is(result, s2.result, 'does not trim')
+    t.same(s2.args, ['ssh', 'default', 'cmd'])
+  })
+})
+
+test('ssh with command as array', function (t) {
+  t.plan(4)
+
+  const s1 = spy({ })
+  const s2 = spy({ })
+
+  Machine.ssh('beep', ['cmd', '--flag'], (err, result) => {
+    t.ifError(err, 'no ssh error')
+    t.same(s1.args, ['ssh', 'beep', 'cmd --flag'])
+  })
+
+  new Machine().ssh(['cmd', '--flag'], (err, result) => {
+    t.ifError(err, 'no ssh error')
+    t.same(s2.args, ['ssh', 'default', 'cmd --flag'])
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
