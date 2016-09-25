@@ -125,7 +125,13 @@ class Machine {
       }
     }).join(LIST_COLUMNS_SEP)
 
-    Machine.command(['ls', '-f', template], (err, stdout) => {
+    const args = ['ls', '-f', template]
+
+    // Optionally add a timeout (in seconds)
+    // to deal with docker/machine#1696.
+    if (opts.timeout) args.push('-t', String(opts.timeout))
+
+    Machine.command(args, (err, stdout) => {
       if (err) return done(err)
 
       const machines = stdout.split(NEWLINE).filter(Boolean).map(line => {

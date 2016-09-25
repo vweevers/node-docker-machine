@@ -331,6 +331,17 @@ test('list with inspect', function (t) {
   })
 })
 
+test('list with timeout', function (t) {
+  t.plan(2)
+
+  const s1 = spy({ result: '' })
+
+  Machine.list({ timeout: 5 }, (err, result) => {
+    t.ifError(err, 'no inspect error')
+    t.same(s1.args, ['ls', '-f', fixture('template.txt'), '-t', '5'])
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
