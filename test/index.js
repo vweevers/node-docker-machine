@@ -281,7 +281,7 @@ test('list', function (t) {
       { active: '-'
       , activeHost: false
       , activeSwarm: false
-      , dockerVersion: 'v1.11.0'
+      , dockerVersion: null
       , driverName: 'virtualbox'
       , error: null
       , name: 'host-1'
@@ -292,7 +292,7 @@ test('list', function (t) {
       { active: '* (swarm)'
       , activeHost: true
       , activeSwarm: true
-      , dockerVersion: 'v1.11.2'
+      , dockerVersion: 'v1.11.0'
       , driverName: 'virtualbox'
       , error: null
       , name: 'host-2'

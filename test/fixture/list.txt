@@ -1,3 +1,3 @@
 default,%2A,true,false,virtualbox,Running,tcp%3A%2F%2F192.168.99.100%3A2376,,,v1.11.2,290000000
-host-1,-,false,false,virtualbox,Stopped,tcp%3A%2F%2F192.168.99.101%3A2376,,,v1.11.0,327000000
-host-2,%2A%20(swarm),true,true,virtualbox,Running,tcp%3A%2F%2F192.168.99.102%3A2376,,,v1.11.2,405000000
+host-1,-,false,false,virtualbox,Stopped,tcp%3A%2F%2F192.168.99.101%3A2376,,,Unknown,327000000
+host-2,%2A%20(swarm),true,true,virtualbox,Running,tcp%3A%2F%2F192.168.99.102%3A2376,,,v1.11.0,405000000
