@@ -8,6 +8,7 @@
   "files": [
     "index.js"
   ],
+  "precommit": "test",
   "scripts": {
     "test-missing": "dependency-check package.json test/index.js",
     "test-unused": "dependency-check package.json --unused --no-dev",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "dependency-check": "~2.6.0",
+    "pre-commit": "~1.1.3",
     "proxyquire": "~1.7.10",
     "tape": "~4.6.0"
   },
