@@ -14,26 +14,20 @@ class Machine {
     else return opts || {}
   }
 
-  constructor(opts) {
-    opts = Machine.options(opts)
-    this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
-  }
-
-  command(args, done) {
-    if (typeof args === 'string') {
-      args = [args, this.name]
-    } else if (args.indexOf(this.name) < 0) {
-      args = args.concat(this.name)
-    }
-
-    cp.execFile('docker-machine', args, {
+  static command(args, done) {
+    cp.execFile('docker-machine', [].concat(args), {
       cwd: env.DOCKER_TOOLBOX_INSTALL_PATH || '.',
       encoding: 'utf8'
     }, done)
   }
 
+  constructor(opts) {
+    opts = Machine.options(opts)
+    this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
+  }
+
   status(done) {
-    this.command('status', (err, stdout) => {
+    this.command(['status', this.name], (err, stdout) => {
       if (err) done(err)
       else done(null, stdout.trim().toLowerCase())
     })
@@ -46,7 +40,7 @@ class Machine {
   }
 
   start(done) {
-    this.command('start', (err) => {
+    this.command(['start', this.name], (err) => {
       if (HOST_NON_EXISTENT.test(err)) {
         done(new Error(`Docker host "${this.name}" does not exist`))
       } else if (ALREADY_RUNNING.test(err)) {
@@ -64,6 +58,8 @@ class Machine {
 
     if (opts.json) args.push('--shell', 'bash')
     else if (opts.shell) args.push('--shell', opts.shell)
+
+    args.push(this.name)
 
     this.command(args, function (err, stdout) {
       if (err) return done(err)
