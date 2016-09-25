@@ -10,6 +10,7 @@ const path = require('path')
 
 const HOST_NON_EXISTENT = /host does not exist/i
     , ALREADY_RUNNING = /already running/i
+    , ALREADY_STOPPED = /already stopped/
     , NEWLINE = /\r?\n/
     , LIST_COLUMNS_SEP = ','
 
@@ -62,6 +63,18 @@ class Machine {
       if (HOST_NON_EXISTENT.test(err)) {
         done(new Error(`Docker host "${name}" does not exist`))
       } else if (ALREADY_RUNNING.test(err)) {
+        done()
+      } else {
+        done(err)
+      }
+    })
+  }
+
+  static stop(name, done) {
+    Machine.command(['stop', name], (err) => {
+      if (HOST_NON_EXISTENT.test(err)) {
+        done(new Error(`Docker host "${name}" does not exist`))
+      } else if (ALREADY_STOPPED.test(err)) {
         done()
       } else {
         done(err)
@@ -171,7 +184,7 @@ class Machine {
   }
 }
 
-;['status', 'isRunning', 'start', 'env', 'ssh', 'inspect'].forEach(method => {
+;['status', 'isRunning', 'start', 'stop', 'env', 'ssh', 'inspect'].forEach(method => {
   Machine.prototype[method] = function () {
     const args = Array.from(arguments)
     args.unshift(this.name)
