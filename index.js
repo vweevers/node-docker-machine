@@ -7,6 +7,7 @@ const path = require('path')
     , camelCase = require('camel-case')
     , parallel = require('run-parallel-limit')
     , xtend = require('xtend')
+    , deprecate = require('deprecate')
 
 const HOST_NON_EXISTENT = /host does not exist/i
     , ALREADY_RUNNING = /already running/i
@@ -87,14 +88,23 @@ class Machine {
 
     const args = ['env']
 
-    if (opts.json) args.push('--shell', 'bash')
+    if (opts.json) {
+      deprecate(
+        'The "json" option has been renamed to "parse" and',
+        'will be removed in node-docker-machine v3.x.x.'
+      )
+
+      opts = xtend(opts, { parse: true })
+    }
+
+    if (opts.parse) args.push('--shell', 'bash')
     else if (opts.shell) args.push('--shell', opts.shell)
 
     args.push(name)
 
     Machine.command(args, function (err, stdout) {
       if (err) return done(err)
-      if (!opts.json) return done(null, stdout.trim())
+      if (!opts.parse) return done(null, stdout.trim())
 
       const res = {}
 

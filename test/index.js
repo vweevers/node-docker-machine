@@ -5,7 +5,13 @@ const test = require('tape')
     , path = require('path')
     , proxyquire =  require('proxyquire')
     , spies = []
-    , Machine = proxyquire('../', { child_process: createMock(spies) })
+    , messages = []
+    , Machine = proxyquire('../', {
+        child_process: createMock(spies),
+        deprecate() {
+          messages.push.apply(messages, arguments)
+        }
+      })
 
 test('name defaults to DOCKER_MACHINE_NAME or "default"', function (t) {
   t.plan(6)
@@ -173,13 +179,13 @@ test('env', function (t) {
   })
 })
 
-test('env as json', function (t) {
+test('env as plain object', function (t) {
   t.plan(6)
 
   const s1 = spy({ result: fixture('env-bash.txt') })
   const s2 = spy({ result: fixture('env-bash.txt') })
 
-  Machine.env('beep', { json: true }, (err, result) => {
+  Machine.env('beep', { parse: true }, (err, result) => {
     t.ifError(err, 'no env error')
     t.same(result, {
       DOCKER_TLS_VERIFY: '1',
@@ -190,7 +196,7 @@ test('env as json', function (t) {
     t.same(s1.args, ['env', '--shell', 'bash', 'beep'])
   })
 
-  new Machine().env({ json: true }, (err, result) => {
+  new Machine().env({ parse: true }, (err, result) => {
     t.ifError(err, 'no env error')
     t.same(result, {
       DOCKER_TLS_VERIFY: '1',
@@ -199,6 +205,27 @@ test('env as json', function (t) {
       DOCKER_MACHINE_NAME: '<name>'
     })
     t.same(s2.args, ['env', '--shell', 'bash', 'default'])
+  })
+})
+
+test('env with json option is deprecated', function (t) {
+  t.plan(4)
+
+  const s1 = spy({ result: fixture('env-bash.txt') })
+
+  Machine.env('beep', { json: true }, (err, result) => {
+    t.ifError(err, 'no env error')
+    t.same(result, {
+      DOCKER_TLS_VERIFY: '1',
+      DOCKER_HOST: 'tcp://<ip>:<port>',
+      DOCKER_CERT_PATH: '<home>/.docker/machine/machines/<name>',
+      DOCKER_MACHINE_NAME: '<name>'
+    })
+    t.same(s1.args, ['env', '--shell', 'bash', 'beep'])
+    t.same(messages.splice(0), [
+      'The "json" option has been renamed to "parse" and',
+      'will be removed in node-docker-machine v3.x.x.'
+    ], 'deprecated')
   })
 })
 
@@ -213,12 +240,12 @@ test('env with custom shell', function (t) {
   })
 })
 
-test('env as json overrides custom shell', function (t) {
+test('env as plain object overrides custom shell', function (t) {
   t.plan(3)
 
   const s1 = spy({ result: fixture('env-bash.txt') })
 
-  Machine.env('beep', { json: true, shell: 'fish' }, (err, result) => {
+  Machine.env('beep', { parse: true, shell: 'fish' }, (err, result) => {
     t.ifError(err, 'no env error')
     t.same(s1.args, ['env', '--shell', 'bash', 'beep'])
     t.same(result, {

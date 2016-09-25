@@ -65,8 +65,8 @@ Stop machine, if not already stopped.
 
 Get the environment variables to dictate that Docker should run a command against a particular machine. By default, `env()` returns the output from [`docker-machine env`](https://docs.docker.com/machine/reference/env/) as-is. That is, a script which can be run in a subshell. Options:
 
-- **shell**: custom shell. Ignored if `json` is true.
-- **json**: if true, `result` will be an object:
+- **shell**: custom shell. Ignored if `parse` is true.
+- **parse**: if true, `result` will be a plain object:
 
 ```js
 {
