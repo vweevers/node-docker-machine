@@ -63,6 +63,25 @@ test('status', function (t) {
   })
 })
 
+test('isRunning', function (t) {
+  t.plan(6)
+
+  const s1 = spy({ result: ' running\n' })
+  const s2 = spy({ result: 'Stopped' })
+
+  Machine.isRunning('beep', (err, running) => {
+    t.ifError(err, 'no isRunning error')
+    t.is(running, true, 'running')
+    t.same(s1.args, ['status', 'beep'])
+  })
+
+  new Machine().isRunning((err, running) => {
+    t.ifError(err, 'no isRunning error')
+    t.is(running, false, 'not running')
+    t.same(s2.args, ['status', 'default'])
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
