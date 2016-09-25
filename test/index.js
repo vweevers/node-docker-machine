@@ -305,6 +305,32 @@ test('list', function (t) {
   })
 })
 
+test('list with inspect', function (t) {
+  t.plan(9)
+
+  const s1 = spy({ result: fixture('list.txt') })
+
+  const s2 = spy({ result: JSON.stringify({ Extra: { Options: { a: true, b: '' } } }) })
+  const s3 = spy({ result: JSON.stringify({ SOME_PROPERTY: 'hello' }) })
+  const s4 = spy({ result: JSON.stringify({ other: 5 }) })
+
+  Machine.list({ inspect: true }, (err, result) => {
+    t.ifError(err, 'no inspect error')
+
+    t.same(s1.args, ['ls', '-f', fixture('template.txt')])
+
+    t.same(s2.args, ['inspect', 'default'], 'inspect default')
+    t.same(s3.args, ['inspect', 'host-1'], 'inspect host-1')
+    t.same(s4.args, ['inspect', 'host-2'], 'inspect host-2')
+
+    t.is(result.length, 3, '3 hosts')
+
+    t.same(result[0].extra, { options: { a: true, b: '' }})
+    t.same(result[1].someProperty, 'hello')
+    t.same(result[2].other, 5)
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
