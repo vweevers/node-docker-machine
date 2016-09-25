@@ -231,6 +231,32 @@ test('ssh with command as array', function (t) {
   })
 })
 
+test('inspect', function (t) {
+  t.plan(9)
+
+  const s1 = spy({ result: JSON.stringify({ name: 'beep' }) + '\r\n' })
+  const s2 = spy({ result: JSON.stringify({ Other_Field: 'boop' }) })
+  const s3 = spy({ result: 'invalid json' })
+
+  Machine.inspect('beep', (err, result) => {
+    t.ifError(err, 'no inspect error')
+    t.same(result, { name: 'beep' }, 'parses trimmed JSON')
+    t.same(s1.args, ['inspect', 'beep'])
+  })
+
+  new Machine().inspect((err, result) => {
+    t.ifError(err, 'no inspect error')
+    t.same(result, { otherField: 'boop' }, 'camelcased')
+    t.same(s2.args, ['inspect', 'default'])
+  })
+
+  new Machine().inspect((err, result) => {
+    t.ok(err, 'catches JSON parse error')
+    t.is(result, undefined, 'no result')
+    t.same(s2.args, ['inspect', 'default'])
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
