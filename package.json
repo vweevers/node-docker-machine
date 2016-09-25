@@ -4,13 +4,22 @@
   "description": "Programmatic API to Docker Machine",
   "license": "MIT",
   "author": "Vincent Weevers",
-  "scripts": {},
+  "scripts": {
+    "test-missing": "dependency-check package.json test/index.js",
+    "test-unused": "dependency-check package.json --unused --no-dev",
+    "test-deps": "npm run -s test-missing && npm run -s test-unused",
+    "test": "npm run -s test-deps 1>&2 && node test"
+  },
   "dependencies": {
     "camel-case": "~3.0.0",
     "run-parallel-limit": "~1.0.3",
     "xtend": "~4.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "dependency-check": "~2.6.0",
+    "proxyquire": "~1.7.10",
+    "tape": "~4.6.0"
+  },
   "keywords": [
     "docker",
     "docker-machine",
