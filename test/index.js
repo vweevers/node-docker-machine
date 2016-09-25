@@ -1,6 +1,8 @@
 'use strict';
 
 const test = require('tape')
+    , fs = require('fs')
+    , path = require('path')
     , proxyquire =  require('proxyquire')
     , spies = []
     , Machine = proxyquire('../', { child_process: createMock(spies) })
@@ -117,6 +119,82 @@ test('start', function (t) {
   })
 })
 
+test('env', function (t) {
+  t.plan(6)
+
+  const s1 = spy({ result: fixture('env-windows.txt') })
+  const s2 = spy({ result: fixture('env-bash.txt') })
+
+  Machine.env('beep', (err, result) => {
+    t.ifError(err, 'no env error')
+    t.is(result, s1.result)
+    t.same(s1.args, ['env', 'beep'])
+  })
+
+  new Machine().env((err, result) => {
+    t.ifError(err, 'no env error')
+    t.is(result, s2.result)
+    t.same(s2.args, ['env', 'default'])
+  })
+})
+
+test('env as json', function (t) {
+  t.plan(6)
+
+  const s1 = spy({ result: fixture('env-bash.txt') })
+  const s2 = spy({ result: fixture('env-bash.txt') })
+
+  Machine.env('beep', { json: true }, (err, result) => {
+    t.ifError(err, 'no env error')
+    t.same(result, {
+      DOCKER_TLS_VERIFY: '1',
+      DOCKER_HOST: 'tcp://<ip>:<port>',
+      DOCKER_CERT_PATH: '<home>/.docker/machine/machines/<name>',
+      DOCKER_MACHINE_NAME: '<name>'
+    })
+    t.same(s1.args, ['env', '--shell', 'bash', 'beep'])
+  })
+
+  new Machine().env({ json: true }, (err, result) => {
+    t.ifError(err, 'no env error')
+    t.same(result, {
+      DOCKER_TLS_VERIFY: '1',
+      DOCKER_HOST: 'tcp://<ip>:<port>',
+      DOCKER_CERT_PATH: '<home>/.docker/machine/machines/<name>',
+      DOCKER_MACHINE_NAME: '<name>'
+    })
+    t.same(s2.args, ['env', '--shell', 'bash', 'default'])
+  })
+})
+
+test('env with custom shell', function (t) {
+  t.plan(2)
+
+  const s1 = spy({ result: '' })
+
+  Machine.env('beep', { shell: 'fish' }, (err, result) => {
+    t.ifError(err, 'no env error')
+    t.same(s1.args, ['env', '--shell', 'fish', 'beep'])
+  })
+})
+
+test('env as json overrides custom shell', function (t) {
+  t.plan(3)
+
+  const s1 = spy({ result: fixture('env-bash.txt') })
+
+  Machine.env('beep', { json: true, shell: 'fish' }, (err, result) => {
+    t.ifError(err, 'no env error')
+    t.same(s1.args, ['env', '--shell', 'bash', 'beep'])
+    t.same(result, {
+      DOCKER_TLS_VERIFY: '1',
+      DOCKER_HOST: 'tcp://<ip>:<port>',
+      DOCKER_CERT_PATH: '<home>/.docker/machine/machines/<name>',
+      DOCKER_MACHINE_NAME: '<name>'
+    })
+  })
+})
+
 function spy(state) {
   spies.push(state)
   return state
@@ -134,4 +212,9 @@ function createMock(spies) {
       process.nextTick(done, state.error || null, state.result)
     }
   }
+}
+
+function fixture(name) {
+  const file = path.join(__dirname, 'fixture', name)
+  return fs.readFileSync(file, 'utf8').trim()
 }

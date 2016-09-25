@@ -1,0 +1,6 @@
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://<ip>:<port>"
+export DOCKER_CERT_PATH="<home>/.docker/machine/machines/<name>"
+export DOCKER_MACHINE_NAME="<name>"
+# Run this command to configure your shell:
+# eval $(docker-machine env <name>)

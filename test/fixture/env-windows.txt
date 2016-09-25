@@ -1,0 +1,6 @@
+SET DOCKER_TLS_VERIFY=1
+SET DOCKER_HOST=tcp://<ip>:<port>
+SET DOCKER_CERT_PATH=<home>\.docker\machine\machines\<name>
+SET DOCKER_MACHINE_NAME=<name>
+REM Run this command to configure your shell:
+REM     @FOR /f "tokens=*" %i IN ('docker-machine env <name>') DO @%i
