@@ -6,16 +6,11 @@
 
 ## example
 
-`node examples/run-command.js ls /`
+`node examples/run-command ls /`
 
 ```js
 const Machine = require('docker-machine')
 const cmd = process.argv.slice(2)
-
-if (!cmd.length) {
-  throw new TypeError('Requires a command to run')
-}
-
 const machine = new Machine
 
 // Start if not already started

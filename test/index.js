@@ -231,7 +231,7 @@ test('env as json overrides custom shell', function (t) {
 })
 
 test('ssh', function (t) {
-  t.plan(6)
+  t.plan(8)
 
   const s1 = spy({ result: ' beep ' })
   const s2 = spy({ result: ' boop ' })
@@ -247,10 +247,18 @@ test('ssh', function (t) {
     t.is(result, s2.result, 'does not trim')
     t.same(s2.args, ['ssh', 'default', 'cmd'])
   })
+
+  t.throws(() => {
+    Machine.ssh('beep', null, () => t.fail('Should not be called'))
+  }, 'command cannot be null')
+
+  t.throws(() => {
+    Machine.ssh('beep', '  ', () => t.fail('Should not be called'))
+  }, 'command cannot be empty')
 })
 
 test('ssh with command as array', function (t) {
-  t.plan(4)
+  t.plan(5)
 
   const s1 = spy({ })
   const s2 = spy({ })
@@ -264,6 +272,10 @@ test('ssh with command as array', function (t) {
     t.ifError(err, 'no ssh error')
     t.same(s2.args, ['ssh', 'default', 'cmd --flag'])
   })
+
+  t.throws(() => {
+    Machine.ssh('beep', ['', ''], () => t.fail('Should not be called'))
+  }, 'command cannot be empty')
 })
 
 test('inspect', function (t) {

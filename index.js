@@ -108,7 +108,15 @@ class Machine {
   }
 
   static ssh(name, cmd, done) {
-    if (Array.isArray(cmd)) cmd = cmd.join(' ')
+    if (Array.isArray(cmd)) {
+      cmd = cmd.join(' ')
+    } else if (typeof cmd !== 'string') {
+      throw new TypeError('Command must be an array or string')
+    }
+
+    cmd = cmd.trim()
+    if (!cmd) throw new TypeError('Command may not be empty')
+
     Machine.command(['ssh', name, cmd], done)
   }
 
