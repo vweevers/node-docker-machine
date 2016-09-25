@@ -26,23 +26,23 @@ class Machine {
     this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
   }
 
-  status(done) {
-    this.command(['status', this.name], (err, stdout) => {
+  static status(name, done) {
+    Machine.command(['status', name], (err, stdout) => {
       if (err) done(err)
       else done(null, stdout.trim().toLowerCase())
     })
   }
 
-  isRunning(done) {
-    this.status((err, status) => {
+  static isRunning(name, done) {
+    Machine.status(name, (err, status) => {
       done(err, status === 'running')
     })
   }
 
-  start(done) {
-    this.command(['start', this.name], (err) => {
+  static start(name, done) {
+    Machine.command(['start', name], (err) => {
       if (HOST_NON_EXISTENT.test(err)) {
-        done(new Error(`Docker host "${this.name}" does not exist`))
+        done(new Error(`Docker host "${name}" does not exist`))
       } else if (ALREADY_RUNNING.test(err)) {
         done()
       } else {
@@ -51,7 +51,7 @@ class Machine {
     })
   }
 
-  env(opts, done) {
+  static env(name, opts, done) {
     if (typeof opts === 'function') done = opts, opts = {}
 
     const args = ['env']
@@ -59,9 +59,9 @@ class Machine {
     if (opts.json) args.push('--shell', 'bash')
     else if (opts.shell) args.push('--shell', opts.shell)
 
-    args.push(this.name)
+    args.push(name)
 
-    this.command(args, function (err, stdout) {
+    Machine.command(args, function (err, stdout) {
       if (err) return done(err)
       if (!opts.json) return done(null, stdout.trim())
 
@@ -76,10 +76,18 @@ class Machine {
     })
   }
 
-  ssh(cmd, done) {
+  static ssh(name, cmd, done) {
     if (Array.isArray(cmd)) cmd = cmd.join(' ')
-    this.command(['ssh', this.name, cmd], done)
+    Machine.command(['ssh', name, cmd], done)
   }
 }
+
+;['status', 'isRunning', 'start', 'env', 'ssh'].forEach(method => {
+  Machine.prototype[method] = function () {
+    const args = Array.from(arguments)
+    args.unshift(this.name)
+    Machine[method].apply(null, args)
+  }
+})
 
 module.exports = Machine
