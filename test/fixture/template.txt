@@ -1,0 +1,1 @@
+{{ .Name | urlquery }},{{ .Active | urlquery }},{{ .ActiveHost | urlquery }},{{ .ActiveSwarm | urlquery }},{{ .DriverName | urlquery }},{{ .State | urlquery }},{{ .URL | urlquery }},{{ .Swarm | urlquery }},{{ .Error | urlquery }},{{ .DockerVersion | urlquery }},{{ .ResponseTime | printf "%d" }}
