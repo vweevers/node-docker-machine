@@ -4,6 +4,10 @@
   "description": "Programmatic API to Docker Machine",
   "license": "MIT",
   "author": "Vincent Weevers",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test-missing": "dependency-check package.json test/index.js",
     "test-unused": "dependency-check package.json --unused --no-dev",
