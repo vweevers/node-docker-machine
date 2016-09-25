@@ -11,7 +11,7 @@ const path = require('path')
 const HOST_NON_EXISTENT = /host does not exist/i
     , ALREADY_RUNNING = /already running/i
     , NEWLINE = /\r?\n/
-    , LIST_COLUMNS_SEP = '\t'
+    , LIST_COLUMNS_SEP = ','
 
 const LIST_COLUMNS
   = [ 'Name'
