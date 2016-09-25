@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-const Machine = require('./')
+const Machine = require('..')
 const cmd = process.argv.slice(2)
 
 if (!cmd.length) {
   throw new TypeError('Requires an SSH command')
 }
 
-const machine = new Machine
+const machine = new Machine()
 
 // Start if not already started
-machine.start(function (err) {
+machine.start((err) => {
   if (err) throw err
 
   // Execute a command

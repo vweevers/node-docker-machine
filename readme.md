@@ -6,7 +6,7 @@
 
 ## example
 
-`node example.js ls /`
+`node examples/run-command.js ls /`
 
 ```js
 const Machine = require('docker-machine')
@@ -27,6 +27,18 @@ machine.start(function (err) {
     if (err) throw err
     console.log(result)
   })
+})
+```
+
+`node examples/list-machines.js`
+
+```js
+const Machine = require('docker-machine')
+
+// List all machines
+Machine.list((err, res) => {
+  if (err) throw err
+  console.log(res)
 })
 ```
 
