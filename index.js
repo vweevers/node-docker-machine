@@ -4,9 +4,27 @@ const path = require('path')
     , fs = require('fs')
     , env = process.env
     , cp = require('child_process')
+    , camelCase = require('camel-case')
+    , parallel = require('run-parallel-limit')
+    , xtend = require('xtend')
 
 const HOST_NON_EXISTENT = /host does not exist/i
     , ALREADY_RUNNING = /already running/i
+    , NEWLINE = /\r?\n/
+    , LIST_COLUMNS_SEP = '\t'
+
+const LIST_COLUMNS
+  = [ 'Name'
+    , 'Active'
+    , 'ActiveHost'
+    , 'ActiveSwarm'
+    , 'DriverName'
+    , 'State'
+    , 'URL'
+    , 'Swarm'
+    , 'Error'
+    , 'DockerVersion'
+    , 'ResponseTime' ]
 
 class Machine {
   constructor(opts) {
@@ -91,10 +109,60 @@ class Machine {
         return done(err)
       }
 
-      done(null, data)
+      done(null, merge({}, data))
     })
   }
 
+  static list(opts, done) {
+    if (typeof opts === 'function') done = opts, opts = {}
+
+    // Build template, escape values with URL encoding
+    const template = LIST_COLUMNS.map(name => {
+      if (name === 'ResponseTime') {
+        return `{{ .${name} | printf "%d" }}`
+      } else {
+        return `{{ .${name} | urlquery }}`
+      }
+    }).join(LIST_COLUMNS_SEP)
+
+    Machine.command(['ls', '-f', template], (err, stdout) => {
+      if (err) return done(err)
+
+      const machines = stdout.split(NEWLINE).filter(Boolean).map(line => {
+        const values = line.split(LIST_COLUMNS_SEP)
+            , machine = {}
+
+        LIST_COLUMNS.forEach((name, i) => {
+          const key = camelCase(name)
+          const val = values[i]
+
+          machine[key] = val === '' ? null : decodeURIComponent(val)
+        })
+
+        // ResponseTime is in nanoseconds
+        machine.responseTime = parseInt(machine.responseTime) / 1e6
+        machine.state = machine.state.toLowerCase()
+        machine.activeHost = machine.activeHost === 'true'
+        machine.activeSwarm = machine.activeSwarm === 'true'
+
+        if (machine.dockerVersion === 'Unknown') {
+          machine.dockerVersion = null
+        }
+
+        return machine
+      })
+
+      if (!opts.inspect) return done(null, machines)
+
+      // Add additional metadata from `docker-machine inspect <name>`
+      parallel(machines.map(machine => next => {
+        Machine.inspect(machine.name, (err, data) => {
+          if (err) next(err)
+          else next(null, xtend(machine, data))
+        })
+      }), 4, done)
+    })
+  }
 }
 
 ;['status', 'isRunning', 'start', 'env', 'ssh', 'inspect'].forEach(method => {
@@ -106,3 +174,16 @@ class Machine {
 })
 
 module.exports = Machine
+
+function merge(node, data) {
+  for(let key in data) {
+    const val = data[key]
+    node[camelCase(key)] = isObject(val) ? merge({}, val) : val
+  }
+
+  return node
+}
+
+function isObject(obj) {
+  return typeof obj === 'object' && obj !== null
+}
