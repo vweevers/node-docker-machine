@@ -61,6 +61,10 @@ Start machine, if not already running.
 
 Stop machine, if not already stopped.
 
+#### `machine.kill(err => ..)`
+
+Kill machine, if not already stopped.
+
 #### `machine.env([opts], (err, result) => ..)`
 
 Get the environment variables to dictate that Docker should run a command against a particular machine. By default, `env()` returns the output from [`docker-machine env`](https://docs.docker.com/machine/reference/env/) as-is. That is, a script which can be run in a subshell. Options:

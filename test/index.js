@@ -160,6 +160,41 @@ test('stop', function (t) {
   })
 })
 
+test('kill', function (t) {
+  t.plan(10)
+
+  const s1 = spy({})
+  const s2 = spy({})
+  const s3 = spy({ error: new Error('\nhost does not exist abc') })
+  const s4 = spy({ error: new Error('\nalready stopped abc') })
+  const s5 = spy({ error: new Error('other error') })
+
+  Machine.kill('beep', (err) => {
+    t.ifError(err, 'no kill error')
+    t.same(s1.args, ['kill', 'beep'])
+  })
+
+  new Machine().kill(err => {
+    t.ifError(err, 'no kill error')
+    t.same(s2.args, ['kill', 'default'])
+  })
+
+  Machine.kill('boop', (err) => {
+    t.is(err.message, 'Docker host "boop" does not exist', 'non existent error')
+    t.same(s3.args, ['kill', 'boop'])
+  })
+
+  new Machine().kill(err => {
+    t.ifError(err, 'no kill error if already stopped')
+    t.same(s4.args, ['kill', 'default'])
+  })
+
+  Machine.kill('four', (err) => {
+    t.is(err.message, 'other error', 'passthrough other error')
+    t.same(s5.args, ['kill', 'four'])
+  })
+})
+
 test('env', function (t) {
   t.plan(6)
 

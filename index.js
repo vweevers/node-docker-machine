@@ -83,6 +83,18 @@ class Machine {
     })
   }
 
+  static kill(name, done) {
+    Machine.command(['kill', name], (err) => {
+      if (HOST_NON_EXISTENT.test(err)) {
+        done(new Error(`Docker host "${name}" does not exist`))
+      } else if (ALREADY_STOPPED.test(err)) {
+        done()
+      } else {
+        done(err)
+      }
+    })
+  }
+
   static env(name, opts, done) {
     if (typeof opts === 'function') done = opts, opts = {}
 
@@ -202,7 +214,7 @@ class Machine {
   }
 }
 
-;['status', 'isRunning', 'start', 'stop', 'env', 'ssh', 'inspect'].forEach(method => {
+;['status', 'isRunning', 'start', 'stop', 'kill', 'env', 'ssh', 'inspect'].forEach(method => {
   Machine.prototype[method] = function () {
     const args = Array.from(arguments)
     args.unshift(this.name)
