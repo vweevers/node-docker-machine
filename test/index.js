@@ -1,17 +1,17 @@
-'use strict';
+'use strict'
 
-const test = require('tape')
-    , fs = require('fs')
-    , path = require('path')
-    , proxyquire =  require('proxyquire')
-    , spies = []
-    , messages = []
-    , Machine = proxyquire('../', {
-        child_process: createMock(spies),
-        deprecate() {
-          messages.push.apply(messages, arguments)
-        }
-      })
+const test = require('tape'),
+  fs = require('fs'),
+  path = require('path'),
+  proxyquire = require('proxyquire'),
+  spies = [],
+  messages = [],
+  Machine = proxyquire('../', {
+    child_process: createMock(spies),
+    deprecate () {
+      messages.push.apply(messages, arguments)
+    }
+  })
 
 test('name defaults to DOCKER_MACHINE_NAME or "default"', function (t) {
   t.plan(6)
@@ -90,7 +90,7 @@ test('isRunning', function (t) {
   })
 })
 
-test('create', function(t) {
+test('create', function (t) {
   t.plan(4)
 
   const s1 = spy({})
@@ -102,15 +102,14 @@ test('create', function(t) {
   })
 
   const options = {
-    "driver": "generic",
-    "generic-ssh-user": "root"
-  };
+    'driver': 'generic',
+    'generic-ssh-user': 'root'
+  }
 
   Machine.create('beep', options, (err) => {
     t.ifError(err, 'no start error')
     t.same(s2.args, ['create', '--driver', 'generic', '--generic-ssh-user', 'root', 'beep'])
   })
-
 })
 
 test('start', function (t) {
@@ -399,39 +398,39 @@ test('list', function (t) {
   Machine.list((err, result) => {
     t.ifError(err, 'no inspect error')
     t.same(result, [
-      { active: '*'
-      , activeHost: true
-      , activeSwarm: false
-      , dockerVersion: 'v1.11.2'
-      , driverName: 'virtualbox'
-      , error: null
-      , name: 'default'
-      , responseTime: 290
-      , state: 'running'
-      , swarm: null
-      , url: 'tcp://192.168.99.100:2376' },
-      { active: '-'
-      , activeHost: false
-      , activeSwarm: false
-      , dockerVersion: null
-      , driverName: 'virtualbox'
-      , error: null
-      , name: 'host-1'
-      , responseTime: 327
-      , state: 'stopped'
-      , swarm: null
-      , url: 'tcp://192.168.99.101:2376' },
-      { active: '* (swarm)'
-      , activeHost: true
-      , activeSwarm: true
-      , dockerVersion: 'v1.11.0'
-      , driverName: 'virtualbox'
-      , error: null
-      , name: 'host-2'
-      , responseTime: 405
-      , state: 'running'
-      , swarm: null
-      , url: 'tcp://192.168.99.102:2376' }
+      { active: '*',
+        activeHost: true,
+        activeSwarm: false,
+        dockerVersion: 'v1.11.2',
+        driverName: 'virtualbox',
+        error: null,
+        name: 'default',
+        responseTime: 290,
+        state: 'running',
+        swarm: null,
+        url: 'tcp://192.168.99.100:2376' },
+      { active: '-',
+        activeHost: false,
+        activeSwarm: false,
+        dockerVersion: null,
+        driverName: 'virtualbox',
+        error: null,
+        name: 'host-1',
+        responseTime: 327,
+        state: 'stopped',
+        swarm: null,
+        url: 'tcp://192.168.99.101:2376' },
+      { active: '* (swarm)',
+        activeHost: true,
+        activeSwarm: true,
+        dockerVersion: 'v1.11.0',
+        driverName: 'virtualbox',
+        error: null,
+        name: 'host-2',
+        responseTime: 405,
+        state: 'running',
+        swarm: null,
+        url: 'tcp://192.168.99.102:2376' }
     ])
     t.same(s1.args, ['ls', '-f', fixture('template.txt')])
   })
@@ -474,14 +473,14 @@ test('list with timeout', function (t) {
   })
 })
 
-function spy(state) {
+function spy (state) {
   spies.push(state)
   return state
 }
 
-function createMock(spies) {
+function createMock (spies) {
   return {
-    execFile(cmd, args, opts, done) {
+    execFile (cmd, args, opts, done) {
       const state = spies.shift()
 
       state.cmd = cmd
@@ -490,24 +489,24 @@ function createMock(spies) {
 
       process.nextTick(done, state.error || null, state.result)
 
-      const mockChildProcessResponse = function() {
-        const stdout = function() {
-          this.on = function(data, cb) {}
-        }
-  
-        const stderr = function() {
-          this.on = function(data, cb) {}
+      const mockChildProcessResponse = function () {
+        const stdout = function () {
+          this.on = function (data, cb) {}
         }
 
-        this.stdout = new stdout();
-        this.stderr = new stderr();
+        const stderr = function () {
+          this.on = function (data, cb) {}
+        }
+
+        this.stdout = new stdout()
+        this.stderr = new stderr()
       }
-      return new mockChildProcessResponse();
+      return new mockChildProcessResponse()
     }
   }
 }
 
-function fixture(name) {
+function fixture (name) {
   const file = path.join(__dirname, 'fixture', name)
   return fs.readFileSync(file, 'utf8').trim()
 }

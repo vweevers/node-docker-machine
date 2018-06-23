@@ -1,65 +1,65 @@
-'use strict';
+'use strict'
 
-const path = require('path')
-    , fs = require('fs')
-    , env = process.env
-    , cp = require('child_process')
-    , camelCase = require('camel-case')
-    , parallel = require('run-parallel-limit')
-    , xtend = require('xtend')
-    , deprecate = require('deprecate')
+const path = require('path'),
+  fs = require('fs'),
+  env = process.env,
+  cp = require('child_process'),
+  camelCase = require('camel-case'),
+  parallel = require('run-parallel-limit'),
+  xtend = require('xtend'),
+  deprecate = require('deprecate')
 
-const HOST_NON_EXISTENT = /host does not exist/i
-    , ALREADY_RUNNING = /already running/i
-    , ALREADY_STOPPED = /already stopped/
-    , NEWLINE = /\r?\n/
-    , LIST_COLUMNS_SEP = ','
+const HOST_NON_EXISTENT = /host does not exist/i,
+  ALREADY_RUNNING = /already running/i,
+  ALREADY_STOPPED = /already stopped/,
+  NEWLINE = /\r?\n/,
+  LIST_COLUMNS_SEP = ','
 
-const LIST_COLUMNS
-  = [ 'Name'
-    , 'Active'
-    , 'ActiveHost'
-    , 'ActiveSwarm'
-    , 'DriverName'
-    , 'State'
-    , 'URL'
-    , 'Swarm'
-    , 'Error'
-    , 'DockerVersion'
-    , 'ResponseTime' ]
+const LIST_COLUMNS =
+  [ 'Name',
+    'Active',
+    'ActiveHost',
+    'ActiveSwarm',
+    'DriverName',
+    'State',
+    'URL',
+    'Swarm',
+    'Error',
+    'DockerVersion',
+    'ResponseTime' ]
 
 class Machine {
-  constructor(opts) {
+  constructor (opts) {
     opts = Machine.options(opts)
     this.name = opts.name || env.DOCKER_MACHINE_NAME || 'default'
   }
 
-  static options(opts) {
+  static options (opts) {
     if (typeof opts === 'string') return { name: opts }
     else return opts || {}
   }
 
-  static command(args, done) {
+  static command (args, done) {
     return cp.execFile('docker-machine', [].concat(args), {
       cwd: env.DOCKER_TOOLBOX_INSTALL_PATH || '.',
       encoding: 'utf8'
     }, done)
   }
 
-  static status(name, done) {
+  static status (name, done) {
     Machine.command(['status', name], (err, stdout) => {
       if (err) done(err)
       else done(null, stdout.trim().toLowerCase())
     })
   }
 
-  static isRunning(name, done) {
+  static isRunning (name, done) {
     Machine.status(name, (err, status) => {
       done(err, status === 'running')
     })
   }
 
-  static create(machineName, options, done) {
+  static create (machineName, options, done) {
     if (typeof options === 'function') {
       done = options
       // Using "virtualbox" as the default driver
@@ -67,28 +67,28 @@ class Machine {
         driver: 'virtualbox'
       }
     }
-    var args = [];
-    args.push('create');
+    var args = []
+    args.push('create')
     for (var key in options) {
-        if (options.hasOwnProperty(key)) {
-            args.push(`--${key}`, options[key]);
-        }
+      if (options.hasOwnProperty(key)) {
+        args.push(`--${key}`, options[key])
+      }
     }
-    args.push(machineName);
+    args.push(machineName)
 
     var process = Machine.command(args, (err) => {
       if (err) done(err)
-      else done();
+      else done()
     })
-    process.stdout.on('data', function(data) {
-      console.log(data);
-    });
-    process.stderr.on('data', function(data) {
-      done("Machine creation failed. " + JSON.stringify(data));
-    });
+    process.stdout.on('data', function (data) {
+      console.log(data)
+    })
+    process.stderr.on('data', function (data) {
+      done('Machine creation failed. ' + JSON.stringify(data))
+    })
   }
 
-  static start(name, done) {
+  static start (name, done) {
     Machine.command(['start', name], (err) => {
       if (HOST_NON_EXISTENT.test(err)) {
         done(new Error(`Docker host "${name}" does not exist`))
@@ -100,7 +100,7 @@ class Machine {
     })
   }
 
-  static stop(name, done) {
+  static stop (name, done) {
     Machine.command(['stop', name], (err) => {
       if (HOST_NON_EXISTENT.test(err)) {
         done(new Error(`Docker host "${name}" does not exist`))
@@ -112,7 +112,7 @@ class Machine {
     })
   }
 
-  static kill(name, done) {
+  static kill (name, done) {
     Machine.command(['kill', name], (err) => {
       if (HOST_NON_EXISTENT.test(err)) {
         done(new Error(`Docker host "${name}" does not exist`))
@@ -124,7 +124,7 @@ class Machine {
     })
   }
 
-  static env(name, opts, done) {
+  static env (name, opts, done) {
     if (typeof opts === 'function') done = opts, opts = {}
 
     const args = ['env']
@@ -158,7 +158,7 @@ class Machine {
     })
   }
 
-  static ssh(name, cmd, done) {
+  static ssh (name, cmd, done) {
     if (Array.isArray(cmd)) {
       cmd = cmd.join(' ')
     } else if (typeof cmd !== 'string') {
@@ -171,7 +171,7 @@ class Machine {
     Machine.command(['ssh', name, cmd], done)
   }
 
-  static inspect(name, done) {
+  static inspect (name, done) {
     Machine.command(['inspect', name], (err, stdout) => {
       if (err) return done(err)
 
@@ -185,7 +185,7 @@ class Machine {
     })
   }
 
-  static list(opts, done) {
+  static list (opts, done) {
     if (typeof opts === 'function') done = opts, opts = {}
 
     // Build template, escape values with URL encoding
@@ -207,8 +207,8 @@ class Machine {
       if (err) return done(err)
 
       const machines = stdout.split(NEWLINE).filter(Boolean).map(line => {
-        const values = line.split(LIST_COLUMNS_SEP)
-            , machine = {}
+        const values = line.split(LIST_COLUMNS_SEP),
+          machine = {}
 
         LIST_COLUMNS.forEach((name, i) => {
           const key = camelCase(name)
@@ -253,8 +253,8 @@ class Machine {
 
 module.exports = Machine
 
-function merge(node, data) {
-  for(let key in data) {
+function merge (node, data) {
+  for (let key in data) {
     const val = data[key]
     node[camelCase(key)] = isObject(val) ? merge({}, val) : val
   }
@@ -262,6 +262,6 @@ function merge(node, data) {
   return node
 }
 
-function isObject(obj) {
+function isObject (obj) {
   return typeof obj === 'object' && obj !== null
 }
