@@ -37,6 +37,28 @@ Machine.list({ inspect: true }, (err, machines) => {
 })
 ```
 
+`node examples/create-machine`
+```js
+const Machine = require('docker-machine');
+
+// Creates a machine with driver "virtualbox"
+Machine.create('test', (err) => {
+  if (err) throw err
+  else console.log("machine 'test' created successfully!");
+});
+
+// Pass args related to the driver you use
+var options = {
+  "driver": "virtualbox",
+  "virtualbox-memory": "1024"
+};
+
+Machine.create('test', options, (err) => {
+  if (err) throw err;
+  else console.log("machine 'test' created successfully!");
+});
+```
+
 ## api
 
 ### `new Machine([name || opts])`
@@ -44,6 +66,18 @@ Machine.list({ inspect: true }, (err, machines) => {
 Options:
 
 - **name**: defaults to `DOCKER_MACHINE_NAME` or "default"
+
+#### `machine.create(name, options, (err) => ..)`
+Options:
+
+Pass any args you want as key-value pairs, say,
+
+```js
+var options = {
+  "driver": "virtualbox",
+  "virtualbox-memory": "1024"
+};
+```
 
 #### `machine.status((err, status) => ..)`
 

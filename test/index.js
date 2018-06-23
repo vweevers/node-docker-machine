@@ -90,6 +90,29 @@ test('isRunning', function (t) {
   })
 })
 
+test('create', function(t) {
+  t.plan(4)
+
+  const s1 = spy({})
+  const s2 = spy({})
+
+  Machine.create('beep', (err) => {
+    t.ifError(err, 'no start error')
+    t.same(s1.args, ['create', '--driver', 'virtualbox', 'beep'])
+  })
+
+  const options = {
+    "driver": "generic",
+    "generic-ssh-user": "root"
+  };
+
+  Machine.create('beep', options, (err) => {
+    t.ifError(err, 'no start error')
+    t.same(s2.args, ['create', '--driver', 'generic', '--generic-ssh-user', 'root', 'beep'])
+  })
+
+})
+
 test('start', function (t) {
   t.plan(10)
 
@@ -466,6 +489,20 @@ function createMock(spies) {
       state.opts = opts
 
       process.nextTick(done, state.error || null, state.result)
+
+      const mockChildProcessResponse = function() {
+        const stdout = function() {
+          this.on = function(data, cb) {}
+        }
+  
+        const stderr = function() {
+          this.on = function(data, cb) {}
+        }
+
+        this.stdout = new stdout();
+        this.stderr = new stderr();
+      }
+      return new mockChildProcessResponse();
     }
   }
 }
