@@ -1,19 +1,17 @@
 'use strict'
 
-const path = require('path'),
-  fs = require('fs'),
-  env = process.env,
-  cp = require('child_process'),
-  camelCase = require('camel-case'),
-  parallel = require('run-parallel-limit'),
-  xtend = require('xtend'),
-  deprecate = require('deprecate')
+const env = process.env
+const cp = require('child_process')
+const camelCase = require('camel-case')
+const parallel = require('run-parallel-limit')
+const xtend = require('xtend')
+const deprecate = require('deprecate')
 
-const HOST_NON_EXISTENT = /host does not exist/i,
-  ALREADY_RUNNING = /already running/i,
-  ALREADY_STOPPED = /already stopped/,
-  NEWLINE = /\r?\n/,
-  LIST_COLUMNS_SEP = ','
+const HOST_NON_EXISTENT = /host does not exist/i
+const ALREADY_RUNNING = /already running/i
+const ALREADY_STOPPED = /already stopped/
+const NEWLINE = /\r?\n/
+const LIST_COLUMNS_SEP = ','
 
 const LIST_COLUMNS =
   [ 'Name',
@@ -67,25 +65,18 @@ class Machine {
         driver: 'virtualbox'
       }
     }
-    var args = []
-    args.push('create')
-    for (var key in options) {
+
+    const args = ['create']
+
+    for (let key in options) {
       if (options.hasOwnProperty(key)) {
         args.push(`--${key}`, options[key])
       }
     }
+
     args.push(machineName)
 
-    var process = Machine.command(args, (err) => {
-      if (err) done(err)
-      else done()
-    })
-    process.stdout.on('data', function (data) {
-      console.log(data)
-    })
-    process.stderr.on('data', function (data) {
-      done('Machine creation failed. ' + JSON.stringify(data))
-    })
+    return Machine.command(args, done)
   }
 
   static start (name, done) {
@@ -125,7 +116,10 @@ class Machine {
   }
 
   static env (name, opts, done) {
-    if (typeof opts === 'function') done = opts, opts = {}
+    if (typeof opts === 'function') {
+      done = opts
+      opts = {}
+    }
 
     const args = ['env']
 
@@ -186,7 +180,10 @@ class Machine {
   }
 
   static list (opts, done) {
-    if (typeof opts === 'function') done = opts, opts = {}
+    if (typeof opts === 'function') {
+      done = opts
+      opts = {}
+    }
 
     // Build template, escape values with URL encoding
     const template = LIST_COLUMNS.map(name => {
@@ -207,8 +204,8 @@ class Machine {
       if (err) return done(err)
 
       const machines = stdout.split(NEWLINE).filter(Boolean).map(line => {
-        const values = line.split(LIST_COLUMNS_SEP),
-          machine = {}
+        const values = line.split(LIST_COLUMNS_SEP)
+        const machine = {}
 
         LIST_COLUMNS.forEach((name, i) => {
           const key = camelCase(name)

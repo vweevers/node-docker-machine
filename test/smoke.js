@@ -1,8 +1,8 @@
 'use strict'
 
-const test = require('tape'),
-  series = require('run-series'),
-  Machine = require('../')
+const test = require('tape')
+const series = require('run-series')
+const Machine = require('../')
 
 console.error('Warning: running these smoke tests will alter the state of your machines.')
 console.error('Starting in 5 seconds..')

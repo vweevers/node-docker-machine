@@ -1,17 +1,17 @@
 'use strict'
 
-const test = require('tape'),
-  fs = require('fs'),
-  path = require('path'),
-  proxyquire = require('proxyquire'),
-  spies = [],
-  messages = [],
-  Machine = proxyquire('../', {
-    child_process: createMock(spies),
-    deprecate () {
-      messages.push.apply(messages, arguments)
-    }
-  })
+const test = require('tape')
+const fs = require('fs')
+const path = require('path')
+const proxyquire = require('proxyquire')
+const spies = []
+const messages = []
+const Machine = proxyquire('../', {
+  child_process: createMock(spies),
+  deprecate () {
+    messages.push.apply(messages, arguments)
+  }
+})
 
 test('name defaults to DOCKER_MACHINE_NAME or "default"', function (t) {
   t.plan(6)
@@ -30,7 +30,7 @@ test('name defaults to DOCKER_MACHINE_NAME or "default"', function (t) {
 })
 
 test('cwd defaults to DOCKER_TOOLBOX_INSTALL_PATH or cwd', function (t) {
-  t.plan(6)
+  t.plan(8)
 
   process.env.DOCKER_TOOLBOX_INSTALL_PATH = '/docker'
 
@@ -38,6 +38,7 @@ test('cwd defaults to DOCKER_TOOLBOX_INSTALL_PATH or cwd', function (t) {
   const s2 = spy({ result: 'fake2' })
 
   Machine.command('anything1', (err, res) => {
+    t.ifError(err, 'no error')
     t.is(res, 'fake1')
     t.same(s1.args, ['anything1'])
     t.is(s1.opts.cwd, '/docker', 'DOCKER_TOOLBOX_INSTALL_PATH')
@@ -46,6 +47,7 @@ test('cwd defaults to DOCKER_TOOLBOX_INSTALL_PATH or cwd', function (t) {
   process.env.DOCKER_TOOLBOX_INSTALL_PATH = ''
 
   Machine.command('anything2', (err, res) => {
+    t.ifError(err, 'no error')
     t.is(res, 'fake2')
     t.same(s2.args, ['anything2'])
     t.is(s2.opts.cwd, '.', 'cwd')
@@ -384,7 +386,7 @@ test('inspect', function (t) {
   new Machine().inspect((err, result) => {
     t.ok(err, 'catches JSON parse error')
     t.is(result, undefined, 'no result')
-    t.same(s2.args, ['inspect', 'default'])
+    t.same(s3.args, ['inspect', 'default'])
   })
 })
 
@@ -456,7 +458,7 @@ test('list with inspect', function (t) {
 
     t.is(result.length, 3, '3 hosts')
 
-    t.same(result[0].extra, { options: { a: true, b: '' }})
+    t.same(result[0].extra, { options: { a: true, b: '' } })
     t.same(result[1].someProperty, 'hello')
     t.same(result[2].other, 5)
   })
@@ -488,20 +490,6 @@ function createMock (spies) {
       state.opts = opts
 
       process.nextTick(done, state.error || null, state.result)
-
-      const mockChildProcessResponse = function () {
-        const stdout = function () {
-          this.on = function (data, cb) {}
-        }
-
-        const stderr = function () {
-          this.on = function (data, cb) {}
-        }
-
-        this.stdout = new stdout()
-        this.stderr = new stderr()
-      }
-      return new mockChildProcessResponse()
     }
   }
 }
