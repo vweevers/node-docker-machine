@@ -57,16 +57,21 @@ class Machine {
     })
   }
 
-  static create (machineName, options, done) {
-    if (typeof options === 'function') {
-      done = options
-      // Using "virtualbox" as the default driver
-      options = {
-        driver: 'virtualbox'
-      }
+  static create (name, driver, options, done) {
+    if (typeof name !== 'string' || name === '') {
+      throw new TypeError('name is required')
     }
 
-    const args = ['create']
+    if (typeof driver !== 'string' || driver === '') {
+      throw new TypeError('driver is required')
+    }
+
+    if (typeof options === 'function') {
+      done = options
+      options = {}
+    }
+
+    const args = ['create', '--driver', driver]
 
     for (let key in options) {
       if (options.hasOwnProperty(key)) {
@@ -74,7 +79,7 @@ class Machine {
       }
     }
 
-    args.push(machineName)
+    args.push(name)
 
     return Machine.command(args, done)
   }

@@ -94,17 +94,16 @@ Machine.env('default', { json: true }, (err, result) => {
 })
 ```
 
-### `Machine.create(name, options, (err) => ..)`
+### `Machine.create(name, driver[, options], (err) => ..)`
 
 Create a machine. Options are driver-specific.
 
 ```js
 const options = {
-  'driver': 'virtualbox',
   'virtualbox-memory': '1024'
 }
 
-Machine.create('test', options, (err) => {
+Machine.create('test', 'virtualbox', options, (err) => {
   if (err) throw err
 })
 ```
