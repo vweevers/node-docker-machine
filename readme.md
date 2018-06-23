@@ -38,21 +38,6 @@ Options:
 
 - **name**: defaults to `DOCKER_MACHINE_NAME` or "default"
 
-#### `machine.create(name, options, (err) => ..)`
-
-Create a machine. Options are driver-specific.
-
-```js
-const options = {
-  'driver': 'virtualbox',
-  'virtualbox-memory': '1024'
-}
-
-Machine.create('test', options, (err) => {
-  if (err) throw err
-})
-```
-
 #### `machine.status((err, status) => ..)`
 
 Get lowercased [status](https://docs.docker.com/machine/reference/status/) of the machine.
@@ -106,6 +91,21 @@ const Machine = require('docker-machine')
 
 Machine.env('default', { json: true }, (err, result) => {
   console.log(result.DOCKER_HOST)
+})
+```
+
+### `Machine.create(name, options, (err) => ..)`
+
+Create a machine. Options are driver-specific.
+
+```js
+const options = {
+  'driver': 'virtualbox',
+  'virtualbox-memory': '1024'
+}
+
+Machine.create('test', options, (err) => {
+  if (err) throw err
 })
 ```
 
