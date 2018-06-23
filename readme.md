@@ -1,15 +1,27 @@
 # docker-machine
 
-**Programmatic API to Docker Machine (0.6.0+).**
+> **Programmatic API to Docker Machine (0.6.0+).**  
+> Wraps the [`docker-machine`](https://docs.docker.com/machine/reference/) CLI.
 
-[![node](https://img.shields.io/node/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine)
-[![npm status](http://img.shields.io/npm/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine)
-[![Travis build status](https://img.shields.io/travis/vweevers/node-docker-machine.svg?style=flat-square&label=travis)](http://travis-ci.org/vweevers/node-docker-machine)
-[![AppVeyor build status](https://img.shields.io/appveyor/ci/vweevers/node-docker-machine.svg?style=flat-square&label=appveyor)](https://ci.appveyor.com/project/vweevers/node-docker-machine)
-[![Dependency status](https://img.shields.io/david/vweevers/node-docker-machine.svg?style=flat-square)](https://david-dm.org/vweevers/node-docker-machine)
+[![node](https://img.shields.io/node/v/docker-machine.svg)](https://www.npmjs.org/package/docker-machine)
+[![npm status](http://img.shields.io/npm/v/docker-machine.svg)](https://www.npmjs.org/package/docker-machine)
+[![Travis build status](https://img.shields.io/travis/vweevers/node-docker-machine.svg?label=travis)](http://travis-ci.org/vweevers/node-docker-machine)
+[![AppVeyor build status](https://img.shields.io/appveyor/ci/vweevers/node-docker-machine.svg?label=appveyor)](https://ci.appveyor.com/project/vweevers/node-docker-machine)
+[![Dependency status](https://img.shields.io/david/vweevers/node-docker-machine.svg)](https://david-dm.org/vweevers/node-docker-machine)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-## example
+## Table of Contents
+
+<details><summary>Click to expand</summary>
+
+- [Example](#example)
+- [API](#api)
+- [Install](#install)
+- [License](#license)
+
+</details>
+
+## Example
 
 `node example.js ls /`
 
@@ -30,7 +42,7 @@ machine.start(function (err) {
 })
 ```
 
-## api
+## API
 
 ### `new Machine([name || opts])`
 
@@ -82,7 +94,7 @@ Run a command via [SSH](https://docs.docker.com/machine/reference/ssh/). The `co
 
 Get the output of [`docker-machine inspect`](https://docs.docker.com/machine/reference/inspect/) as a plain object with camelCase properties.
 
-### static methods
+### Static methods
 
 All of the above methods (from `status()` to `inspect()`) are also accessible as static methods, where the first argument is a `name`. For example:
 
@@ -149,7 +161,7 @@ Options:
 }
 ```
 
-## install
+## Install
 
 With [npm](https://npmjs.org) do:
 
@@ -157,6 +169,6 @@ With [npm](https://npmjs.org) do:
 npm install docker-machine
 ```
 
-## license
+## License
 
-[MIT](http://opensource.org/licenses/MIT) © Vincent Weevers
+[MIT](LICENSE) © 2016-present Vincent Weevers
