@@ -2,7 +2,12 @@
 
 **Programmatic API to Docker Machine (0.6.0+).**
 
-[![node](https://img.shields.io/node/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine) [![npm status](http://img.shields.io/npm/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine) [![Travis build status](https://img.shields.io/travis/vweevers/node-docker-machine.svg?style=flat-square&label=travis)](http://travis-ci.org/vweevers/node-docker-machine) [![AppVeyor build status](https://img.shields.io/appveyor/ci/vweevers/node-docker-machine.svg?style=flat-square&label=appveyor)](https://ci.appveyor.com/project/vweevers/node-docker-machine) [![Dependency status](https://img.shields.io/david/vweevers/node-docker-machine.svg?style=flat-square)](https://david-dm.org/vweevers/node-docker-machine)
+[![node](https://img.shields.io/node/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine)
+[![npm status](http://img.shields.io/npm/v/docker-machine.svg?style=flat-square)](https://www.npmjs.org/package/docker-machine)
+[![Travis build status](https://img.shields.io/travis/vweevers/node-docker-machine.svg?style=flat-square&label=travis)](http://travis-ci.org/vweevers/node-docker-machine)
+[![AppVeyor build status](https://img.shields.io/appveyor/ci/vweevers/node-docker-machine.svg?style=flat-square&label=appveyor)](https://ci.appveyor.com/project/vweevers/node-docker-machine)
+[![Dependency status](https://img.shields.io/david/vweevers/node-docker-machine.svg?style=flat-square)](https://david-dm.org/vweevers/node-docker-machine)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## example
 
