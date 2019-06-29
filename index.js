@@ -4,7 +4,6 @@ const env = process.env
 const cp = require('child_process')
 const camelCase = require('camel-case')
 const parallel = require('run-parallel-limit')
-const xtend = require('xtend')
 const deprecate = require('deprecate')
 
 const HOST_NON_EXISTENT = /host does not exist/i
@@ -134,7 +133,7 @@ class Machine {
         'will be removed in node-docker-machine v3.x.x.'
       )
 
-      opts = xtend(opts, { parse: true })
+      opts = Object.assign({}, opts, { parse: true })
     }
 
     if (opts.parse) args.push('--shell', 'bash')
@@ -238,7 +237,7 @@ class Machine {
       parallel(machines.map(machine => next => {
         Machine.inspect(machine.name, (err, data) => {
           if (err) next(err)
-          else next(null, xtend(machine, data))
+          else next(null, Object.assign({}, machine, data))
         })
       }), 4, done)
     })

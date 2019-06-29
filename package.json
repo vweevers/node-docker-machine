@@ -18,8 +18,7 @@
   "dependencies": {
     "camel-case": "~3.0.0",
     "deprecate": "~1.1.0",
-    "run-parallel-limit": "~1.0.3",
-    "xtend": "~4.0.1"
+    "run-parallel-limit": "~1.0.3"
   },
   "devDependencies": {
     "dependency-check": "^3.3.0",
