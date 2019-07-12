@@ -5,6 +5,7 @@ const cp = require('child_process')
 const camelCase = require('camel-case')
 const parallel = require('run-parallel-limit')
 const deprecate = require('deprecate')
+const hasOwnProperty = Object.prototype.hasOwnProperty
 
 const HOST_NON_EXISTENT = /host does not exist/i
 const ALREADY_RUNNING = /already running/i
@@ -13,7 +14,7 @@ const NEWLINE = /\r?\n/
 const LIST_COLUMNS_SEP = ','
 
 const LIST_COLUMNS =
-  [ 'Name',
+  ['Name',
     'Active',
     'ActiveHost',
     'ActiveSwarm',
@@ -23,7 +24,7 @@ const LIST_COLUMNS =
     'Swarm',
     'Error',
     'DockerVersion',
-    'ResponseTime' ]
+    'ResponseTime']
 
 class Machine {
   constructor (opts) {
@@ -72,8 +73,8 @@ class Machine {
 
     const args = ['create', '--driver', driver]
 
-    for (let key in options) {
-      if (options.hasOwnProperty(key)) {
+    for (const key in options) {
+      if (hasOwnProperty.call(options, key)) {
         args.push(`--${key}`, options[key])
       }
     }
@@ -255,7 +256,7 @@ class Machine {
 module.exports = Machine
 
 function merge (node, data) {
-  for (let key in data) {
+  for (const key in data) {
     const val = data[key]
     node[camelCase(key)] = isObject(val) ? merge({}, val) : val
   }
