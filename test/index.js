@@ -399,7 +399,8 @@ test('list', function (t) {
   Machine.list((err, result) => {
     t.ifError(err, 'no inspect error')
     t.same(result, [
-      { active: '*',
+      {
+        active: '*',
         activeHost: true,
         activeSwarm: false,
         dockerVersion: 'v1.11.2',
@@ -409,8 +410,10 @@ test('list', function (t) {
         responseTime: 290,
         state: 'running',
         swarm: null,
-        url: 'tcp://192.168.99.100:2376' },
-      { active: '-',
+        url: 'tcp://192.168.99.100:2376'
+      },
+      {
+        active: '-',
         activeHost: false,
         activeSwarm: false,
         dockerVersion: null,
@@ -420,8 +423,10 @@ test('list', function (t) {
         responseTime: 327,
         state: 'stopped',
         swarm: null,
-        url: 'tcp://192.168.99.101:2376' },
-      { active: '* (swarm)',
+        url: 'tcp://192.168.99.101:2376'
+      },
+      {
+        active: '* (swarm)',
         activeHost: true,
         activeSwarm: true,
         dockerVersion: 'v1.11.0',
@@ -431,7 +436,8 @@ test('list', function (t) {
         responseTime: 405,
         state: 'running',
         swarm: null,
-        url: 'tcp://192.168.99.102:2376' }
+        url: 'tcp://192.168.99.102:2376'
+      }
     ])
     t.same(s1.args, ['ls', '-f', fixture('template.txt')])
   })
