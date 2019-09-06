@@ -9,9 +9,7 @@
     "index.js"
   ],
   "scripts": {
-    "test-missing": "dependency-check package.json test/index.js",
-    "test-unused": "dependency-check package.json --unused --no-dev",
-    "test-deps": "npm run -s test-missing && npm run -s test-unused",
+    "test-deps": "dependency-check package.json test/index.js --no-dev",
     "test": "standard && hallmark && npm run -s test-deps 1>&2 && node test",
     "hallmark": "hallmark --fix"
   },
@@ -21,7 +19,7 @@
     "run-parallel-limit": "~1.0.3"
   },
   "devDependencies": {
-    "dependency-check": "^3.3.0",
+    "dependency-check": "^4.1.0",
     "hallmark": "^2.0.0",
     "proxyquire": "^2.1.0",
     "run-series": "^1.1.4",
