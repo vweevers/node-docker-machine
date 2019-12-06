@@ -14,7 +14,7 @@
     "hallmark": "hallmark --fix"
   },
   "dependencies": {
-    "camel-case": "~3.0.0",
+    "camel-case": "~4.1.0",
     "deprecate": "~1.1.0",
     "run-parallel-limit": "~1.0.3"
   },
