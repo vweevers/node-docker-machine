@@ -16,6 +16,18 @@
 
 - [Example](#example)
 - [API](#api)
+  - [`new Machine([name || opts])`](#new-machinename--opts)
+    - [`machine.status((err, status) => ..)`](#machinestatuserr-status--)
+    - [`machine.isRunning((err, running) => ..)`](#machineisrunningerr-running--)
+    - [`machine.start(err => ..)`](#machinestarterr--)
+    - [`machine.stop(err => ..)`](#machinestoperr--)
+    - [`machine.kill(err => ..)`](#machinekillerr--)
+    - [`machine.env([opts], (err, result) => ..)`](#machineenvopts-err-result--)
+    - [`machine.ssh(command, (err, result) => ..)`](#machinesshcommand-err-result--)
+    - [`machine.inspect((err, result) => ..)`](#machineinspecterr-result--)
+  - [Static methods](#static-methods)
+  - [`Machine.create(name, driver[, options], (err) => ..)`](#machinecreatename-driver-options-err--)
+  - [`Machine.list([opts], (err, machines) => ..)`](#machinelistopts-err-machines--)
 - [Install](#install)
 - [License](#license)
 
